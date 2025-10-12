@@ -166,12 +166,14 @@ The agent **fixes its own code errors**:
 - Full version history with edit notes
 - Tutors explain WHY they edited (feeds learning)
 - AI re-evaluates after edits to measure delta
+<img width="1101" height="862" alt="image" src="https://github.com/user-attachments/assets/a81573de-8f72-4c6f-a474-28645256bbfb" />
 
 **For Activity:**
 - Chat-based iteration ("Make molecules bigger, add sound effects")
 - Agent uses Qwen3 to modify code conversationally
 - Auto-redeploy after each change
 - Chat history stored for learning
+<img width="1095" height="1080" alt="image" src="https://github.com/user-attachments/assets/41790c94-b763-42bb-ab8b-063e9da597e8" />
 
 ### 6. **Self-Evaluation with Detailed Criteria**
 
