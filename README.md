@@ -2,6 +2,7 @@
 
 **WaveHacks 2 2025 Submission** | **Track**: Best Self-Improving Agent
 ---
+<img width="1399" height="931" alt="Screenshot 2025-10-12 at 1 25 43 PM" src="https://github.com/user-attachments/assets/e54408bf-9221-47e8-9303-958f7c2ef640" />
 
 ## 🌟 What Makes This Special
 
