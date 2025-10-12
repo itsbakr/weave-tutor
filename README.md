@@ -157,6 +157,7 @@ The agent **fixes its own code errors**:
 ```
 
 **Result**: Most activities deploy successfully on attempt 1-2, even if code has minor errors!
+<img width="1288" height="1073" alt="image" src="https://github.com/user-attachments/assets/d426c1d2-683d-459f-b0fd-4f390d2b38fb" />
 
 ### 5. **Collaborative Editing**
 
