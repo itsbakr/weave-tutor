@@ -2,7 +2,7 @@
 
 **WaveHacks 2 2025 Submission** | **Track**: Best Self-Improving Agent
 ---
-<img width="1399" height="931" alt="Screenshot 2025-10-12 at 1 25 43 PM" src="https://github.com/user-attachments/assets/e54408bf-9221-47e8-9303-958f7c2ef640" />
+<img width="1318" height="918" alt="image" src="https://github.com/user-attachments/assets/52ecc726-6546-47af-9f44-238b21364a51" />
 
 ## 🌟 What Makes This Special
 
@@ -157,7 +157,7 @@ The agent **fixes its own code errors**:
 ```
 
 **Result**: Most activities deploy successfully on attempt 1-2, even if code has minor errors!
-<img width="1288" height="1073" alt="image" src="https://github.com/user-attachments/assets/d426c1d2-683d-459f-b0fd-4f390d2b38fb" />
+<img width="1204" height="1209" alt="image" src="https://github.com/user-attachments/assets/d5d53ffb-c2ec-4aa3-92da-9c7a82915795" />
 
 ### 5. **Collaborative Editing**
 
@@ -173,7 +173,7 @@ The agent **fixes its own code errors**:
 - Agent uses Qwen3 to modify code conversationally
 - Auto-redeploy after each change
 - Chat history stored for learning
-<img width="1095" height="1080" alt="image" src="https://github.com/user-attachments/assets/41790c94-b763-42bb-ab8b-063e9da597e8" />
+<img width="1076" height="1171" alt="image" src="https://github.com/user-attachments/assets/a83377f6-e38f-4b83-be6c-29e4954452cc" />
 
 ### 6. **Self-Evaluation with Detailed Criteria**
 
