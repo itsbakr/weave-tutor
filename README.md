@@ -401,9 +401,7 @@ weave-tutor/
 
 ---
 
-## 🎯 Winning Strategy
-
-### What Makes This Stand Out
+## 🎯 What Makes This Stand Out
 
 1. **Novel Auto-Debugging Loop**
    - Only project that fixes its own code errors in real-time
