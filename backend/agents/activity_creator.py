@@ -260,7 +260,7 @@ async def generate_react_activity_code(
     # Truncate explanation to avoid token limits
     explanation = knowledge_context.get('explanation', '')[:1000]
     
-    prompt = f"""Generate a complete, interactive React web page for an educational activity.
+    prompt = f"""Generate a BEAUTIFUL, interactive React web page for an educational activity.
 
 TOPIC: {topic}
 STUDENT GRADE: {grade}
@@ -273,9 +273,90 @@ EDUCATIONAL CONTEXT:
 
 ---
 
-DESIGN PHILOSOPHY - CREATE A FUN, MEMORABLE LEARNING EXPERIENCE:
+🎨 **CRITICAL: DESIGN-FIRST APPROACH**
 
-Your goal is to create an engaging, interactive educational experience that feels like a game, simulation, or adventure - NOT a traditional worksheet or quiz.
+This MUST look like a professional, modern web app (Duolingo, Khan Academy, Brilliant.org quality).
+
+**MODERN UI DESIGN REQUIREMENTS (MANDATORY!):**
+
+1. **COLOR SCHEME** (Pick one that fits the topic):
+   - Science/Tech: Gradients (blue-500 → purple-600, teal-400 → cyan-600)
+   - Nature/Biology: Green gradients (emerald-400 → green-600)
+   - Space: Dark theme with indigo/purple (bg-gray-900, text-purple-400)
+   - Math: Orange/yellow warm tones (amber-400 → orange-600)
+   - Use `bg-gradient-to-br` or `bg-gradient-to-r` for backgrounds
+
+2. **LAYOUT & SPACING**:
+   ```jsx
+   <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 p-8">
+     <div className="max-w-6xl mx-auto">
+       <div className="bg-white rounded-3xl shadow-2xl p-8">
+         {{/* Your content */}}
+       </div>
+     </div>
+   </div>
+   ```
+   - Use `rounded-3xl`, `rounded-2xl` for modern curves
+   - Generous padding: `p-6`, `p-8`, `px-8 py-6`
+   - White/light cards on gradient backgrounds
+   - `shadow-2xl`, `shadow-xl` for depth
+
+3. **TYPOGRAPHY**:
+   - Headings: `text-4xl font-black` or `text-3xl font-bold`
+   - Subheadings: `text-xl font-semibold`
+   - Body: `text-base` or `text-lg`
+   - Use `text-gray-900` for dark text, `text-gray-600` for secondary
+
+4. **BUTTONS & INTERACTIVE ELEMENTS**:
+   ```jsx
+   <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+     Action Text
+   </button>
+   ```
+   - ALWAYS use gradients for primary buttons
+   - Add hover effects: `hover:scale-105 transform transition-all`
+   - Use `rounded-xl` or `rounded-2xl` for buttons
+   - Icons with emojis (🚀 🔬 🎯 ⚡ 🌟 💡 🎨)
+
+5. **CARDS & CONTAINERS**:
+   ```jsx
+   <div className="bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+     {{/* Card content */}}
+   </div>
+   ```
+   - Use subtle gradients for backgrounds (`from-blue-50 to-indigo-50`)
+   - Borders with color: `border-2 border-blue-300`
+   - Hover effects on interactive cards
+
+6. **PROGRESS INDICATORS & FEEDBACK**:
+   ```jsx
+   {{/* Progress Bar */}}
+   <div className="w-full bg-gray-200 rounded-full h-4">
+     <div className="bg-gradient-to-r from-green-400 to-emerald-500 h-4 rounded-full transition-all duration-500" 
+          style={{{{width: `${{progress}}%`}}}}>
+     </div>
+   </div>
+   
+   {{/* Score Display */}}
+   <div className="text-center">
+     <div className="text-5xl font-black bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+       {{score}}
+     </div>
+     <div className="text-sm text-gray-600">Points</div>
+   </div>
+   ```
+
+7. **ANIMATIONS & TRANSITIONS**:
+   - ALWAYS add: `transition-all duration-300` to interactive elements
+   - Use `animate-pulse` for loading states
+   - Use `transform hover:scale-105` for hover effects
+   - Add smooth transitions: `transition-colors duration-200`
+
+8. **VISUAL HIERARCHY**:
+   - Large, bold titles at top
+   - Clear sections with visual separation
+   - Important elements: larger, brighter, gradients
+   - Secondary info: smaller, muted colors
 
 **ACTIVITY TYPES** (Choose what fits):
 1. Interactive Simulations (physics, chemistry, biology visualizations)
@@ -287,17 +368,18 @@ Your goal is to create an engaging, interactive educational experience that feel
 **ENGAGEMENT PRINCIPLES**:
 - Curiosity-driven exploration
 - Meaningful choices that affect outcomes
-- Immediate visual feedback
+- Immediate visual feedback with animations
 - Learning through DOING, not reading
 - Make failures interesting, not punishing
 - Smooth, responsive interactions
 
 **TECHNICAL REQUIREMENTS**:
 - Modern React with hooks (useState, useEffect, useCallback)
-- Beautiful UI with Tailwind CSS
-- Rich interactivity (drag, click, animations)
+- **BEAUTIFUL UI with Tailwind CSS** (see design requirements above!)
+- Rich interactivity (click, drag, animations)
 - Self-contained (no external APIs)
 - Production-ready code quality
+- **ALWAYS use semicolons** after every statement (mandatory!)
 - NO LINE LIMIT - build something comprehensive!
 
 **CULTURAL ADAPTATION**:
@@ -306,25 +388,60 @@ Your goal is to create an engaging, interactive educational experience that feel
 
 ---
 
+**BAD EXAMPLE (Ugly, avoid this!):**
+```jsx
+<div>
+  <h1>Topic</h1>
+  <button>Click</button>
+  <div>Score: 0</div>
+</div>
+```
+
+**GOOD EXAMPLE (Beautiful, do this!):**
+```jsx
+<div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 p-8">
+  <div className="max-w-6xl mx-auto">
+    <div className="bg-white rounded-3xl shadow-2xl p-8">
+      <h1 className="text-5xl font-black text-gray-900 mb-4 text-center">
+        🚀 Mars Rover Mission
+      </h1>
+      <div className="grid grid-cols-3 gap-6 mb-8">
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border-2 border-indigo-300 rounded-2xl p-6 text-center">
+          <div className="text-4xl font-black text-indigo-600">0%</div>
+          <div className="text-sm text-gray-600 mt-2">Battery Level</div>
+        </div>
+      </div>
+      <button className="w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xl font-bold rounded-2xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+        🔋 Charge Battery
+      </button>
+    </div>
+  </div>
+</div>
+```
+
+---
+
 **OUTPUT FORMAT**:
 
-Generate a COMPLETE, self-contained React component with:
-1. All necessary imports (React hooks)
-2. State management for game/simulation logic
-3. Rich interactivity with visual feedback
-4. Beautiful UI with Tailwind CSS
-5. Educational content integrated naturally
-6. Comments explaining key concepts
+Generate a COMPLETE, BEAUTIFUL, self-contained React component with:
+1. Modern gradient backgrounds and color schemes
+2. Rounded corners (rounded-2xl, rounded-3xl) everywhere
+3. Shadow effects for depth
+4. Hover animations and transitions
+5. Clear visual hierarchy with bold typography
+6. Emojis for visual interest (🚀 🔬 🎯 ⚡ 🌟 💡)
+7. State management for game/simulation logic
+8. Educational content integrated naturally
 
 Return ONLY the complete React component code (no markdown, no explanation).
 
 Start with: import React, {{ useState, useEffect, useCallback }} from 'react';
 
-Generate the code now:
+Generate BEAUTIFUL code now:
 """
     
     # Call Qwen3 Coder 480B via W&B Inference
-    response = await call_qwen3_coder(prompt, temperature=0.3, max_tokens=4096)
+    response = await call_qwen3_coder(prompt, temperature=0.3, max_tokens=6000)
     
     # Extract code from response
     code = extract_code_block(response, language="jsx")
@@ -485,31 +602,37 @@ ERROR LOGS FROM SANDBOX:
 
 1. **Analyze the Error**:
    - Identify root cause (syntax, logic, missing imports, etc.)
+   - Check for MISSING SEMICOLONS (very common!)
    - Check React-specific issues (hooks, state, lifecycle)
    - Look for Tailwind CSS class issues
    - Check for JavaScript errors (undefined variables, type mismatches)
+   - Check for Babel/parser errors (usually syntax issues)
 
 2. **Fix Strategy**:
    - Make MINIMAL changes to fix the error
    - Don't remove features - fix them properly
+   - **ADD SEMICOLONS** after every statement (JavaScript best practice!)
    - Ensure all state updates are correct
    - Verify all event handlers are properly bound
    - Check all conditional rendering logic
 
 3. **Common Issues**:
+   - **Missing semicolons** (add ; after every statement)
    - Missing dependencies in useEffect
    - Incorrect hook usage (calling hooks conditionally)
-   - Unescaped characters in JSX
+   - Unescaped characters in JSX (especially quotes in strings)
    - Missing closing tags
    - Incorrect prop types
    - Using undefined variables
    - Math operations on undefined/null values
+   - Template literals with backticks inside JSX strings
 
 **OUTPUT**: 
 
 Return the COMPLETE, FIXED React component code.
 - Fix the actual problem, don't just remove features
 - Maintain ALL educational and interactive elements
+- **Maintain the BEAUTIFUL UI design** (gradients, rounded corners, shadows, animations)
 - Keep code quality high
 - Must run without errors
 
@@ -517,7 +640,7 @@ Return ONLY the complete fixed code (no markdown, no explanation):
 """
     
     # Call Qwen3 Coder to fix
-    response = await call_qwen3_coder(prompt, temperature=0.2, max_tokens=4096)
+    response = await call_qwen3_coder(prompt, temperature=0.2, max_tokens=6000)
     
     # Extract fixed code
     fixed_code = extract_code_block(response, language="jsx")

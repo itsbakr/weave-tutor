@@ -97,7 +97,10 @@ class DaytonaService:
                 },
                 "devDependencies": {
                     "vite": "^5.0.0",
-                    "@vitejs/plugin-react": "^4.0.0"
+                    "@vitejs/plugin-react": "^4.0.0",
+                    "tailwindcss": "^3.4.0",
+                    "postcss": "^8.4.32",
+                    "autoprefixer": "^10.4.16"
                 },
                 "scripts": {
                     "dev": "vite --host 0.0.0.0 --port 3000"
@@ -126,10 +129,40 @@ export default defineConfig({
   }
 })
 """
-            # ✅ Convert to bytes!
             await loop.run_in_executor(
                 None,
                 lambda: sandbox.fs.upload_file(vite_config.encode('utf-8'), "vite.config.js")
+            )
+            
+            # 2c. Create tailwind.config.js
+            tailwind_config = """/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+"""
+            await loop.run_in_executor(
+                None,
+                lambda: sandbox.fs.upload_file(tailwind_config.encode('utf-8'), "tailwind.config.js")
+            )
+            
+            # 2d. Create postcss.config.js
+            postcss_config = """export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+"""
+            await loop.run_in_executor(
+                None,
+                lambda: sandbox.fs.upload_file(postcss_config.encode('utf-8'), "postcss.config.js")
             )
             
             # 2c. Create index.html
@@ -152,10 +185,20 @@ export default defineConfig({
                 lambda: sandbox.fs.upload_file(index_html.encode('utf-8'), "index.html")
             )
             
-            # 2d. Create src directory by uploading main.jsx (directory auto-created)
+            # 2e. Create src/index.css with Tailwind directives
+            index_css = """@tailwind base;
+@tailwind components;
+@tailwind utilities;
+"""
+            await loop.run_in_executor(
+                None,
+                lambda: sandbox.fs.upload_file(index_css.encode('utf-8'), "src/index.css")
+            )
             
+            # 2f. Create src/main.jsx with CSS import
             main_jsx = """import React from 'react'
 import ReactDOM from 'react-dom/client'
+import './index.css'
 import App from './App.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -164,20 +207,18 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </React.StrictMode>
 )
 """
-            # ✅ Convert to bytes!
             await loop.run_in_executor(
                 None,
                 lambda: sandbox.fs.upload_file(main_jsx.encode('utf-8'), "src/main.jsx")
             )
             
-            # 2e. Upload the generated React component
-            # ✅ Convert to bytes!
+            # 2g. Upload the generated React component
             await loop.run_in_executor(
                 None,
                 lambda: sandbox.fs.upload_file(code.encode('utf-8'), "src/App.jsx")
             )
             
-            print("✅ Project structure created")
+            print("✅ Project structure created with Tailwind CSS!")
             
             # Step 3: Create process session for command execution
             print("🔧 Creating process session...")
@@ -186,8 +227,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 lambda: sandbox.process.create_session(session_id)
             )
             
-            # Step 4: Install dependencies
-            print("📦 Installing dependencies (this may take 30-60 seconds)...")
+            # Step 4: Install dependencies (including Tailwind!)
+            print("📦 Installing dependencies (this may take 60-90 seconds with Tailwind)...")
             install_response = await loop.run_in_executor(
                 None,
                 lambda: sandbox.process.execute_session_command(
@@ -197,8 +238,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             )
             install_cmd_id = install_response.cmd_id  # Extract command ID from response
             
-            # Wait for installation and check logs
-            await asyncio.sleep(5)
+            # Wait longer for Tailwind installation
+            await asyncio.sleep(8)
             install_logs = await loop.run_in_executor(
                 None,
                 lambda: sandbox.process.get_session_command_logs(
@@ -238,10 +279,22 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             sandbox_url = preview_info.url
             print(f"✅ React app deployed: {sandbox_url}")
             
-            # Check for compilation errors (check multiple times to catch lazy compilation)
+            # Check for compilation errors by triggering compilation
             print("🔍 Checking for compilation errors...")
             errors_detected = False
             final_logs = None
+            
+            # Try to fetch the URL to trigger compilation
+            try:
+                import httpx
+                async with httpx.AsyncClient(timeout=10.0) as client:
+                    print(f"🌐 Triggering compilation by fetching: {sandbox_url}")
+                    await client.get(sandbox_url)
+                    # Wait for compilation to complete and errors to appear in logs
+                    await asyncio.sleep(3)
+            except Exception as e:
+                print(f"⚠️ Could not fetch URL (may be normal): {str(e)[:100]}")
+                # Continue anyway - errors might still be in logs
             
             for check_attempt in range(3):  # Check 3 times over 15 seconds
                 dev_logs = await loop.run_in_executor(
@@ -255,13 +308,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 logs_output = str(dev_logs.output)
                 logs_lower = logs_output.lower()
                 
-                # Check for compilation errors (but ignore Vite's "ready" success messages)
+                # Check for compilation errors (including babel/parser errors)
                 has_error_keywords = any([
                     "syntaxerror" in logs_lower,
                     "parse error" in logs_lower,
                     "missing semicolon" in logs_lower,
                     "unexpected token" in logs_lower,
                     "failed to compile" in logs_lower,
+                    "plugin:vite:react-babel" in logs_lower,  # Vite React plugin errors
+                    "@babel/parser" in logs_lower,  # Babel parser errors
                     ("error" in logs_lower and "ready in" not in logs_lower and "error handling" not in logs_lower)
                 ])
                 

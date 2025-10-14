@@ -1,36 +1,123 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TutorPilot Frontend - Next.js + TypeScript
 
-## Getting Started
+Modern, Duolingo-inspired UI for AI-powered educational content generation.
 
-First, run the development server:
+## 🚀 Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Configure environment
+echo "NEXT_PUBLIC_API_URL=http://localhost:8000" > .env.local
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Open http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📁 Project Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+frontend/
+├── app/                      # Next.js App Router
+│   ├── page.tsx             # Home page (agent overview)
+│   ├── strategy/            # Strategy Planner UI
+│   ├── lesson/              # Lesson Creator UI
+│   └── activity/            # Activity Creator UI + sandbox preview
+├── components/
+│   ├── RichTextEditor.tsx       # TipTap collaborative editor
+│   ├── SelfEvaluationCard.tsx   # Criteria breakdown display
+│   ├── ActivityChat.tsx         # Conversational code editing
+│   ├── SandboxPreview.tsx       # Daytona iframe preview
+│   └── VersionHistory.tsx       # Content version timeline
+├── lib/
+│   ├── api.ts                   # API client functions
+│   ├── types.ts                 # TypeScript interfaces
+│   ├── strategyFormatter.ts     # Markdown to HTML
+│   └── lessonFormatter.ts       # JSON to HTML
+└── package.json
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🎨 Design System
 
-## Learn More
+- **Colors**: Red (`#EF4444`) and Blue (`#3B82F6`) - Duolingo-inspired
+- **Typography**: Inter font, bold headings, clean hierarchy
+- **Components**: Rounded corners (`rounded-2xl`), shadows, hover animations
+- **Layout**: Max-width containers, generous spacing, gradient backgrounds
 
-To learn more about Next.js, take a look at the following resources:
+## 🔧 Key Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Hierarchical Agent Handoff
+- **Strategy Page**: Dropdown to select student → generates 4-week plan
+- **Lesson Page**: Dropdown to select strategy week → auto-fills topic
+- **Activity Page**: Dropdown to select lesson + phase → generates React code
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Collaborative Editing
 
-## Deploy on Vercel
+**Strategy & Lesson:**
+- Rich text editor (TipTap) with formatting toolbar
+- Version history with edit notes
+- Self-evaluation display (6 criteria scores)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Activity:**
+- Chat-based editing ("Make molecules bigger, add sound effects")
+- Full-screen sandbox preview (Daytona iframe)
+- Retry deployment button
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Self-Evaluation Display
+- Overall score with progress bar
+- 6 criteria breakdown with individual scores
+- Identified weaknesses (orange cards)
+- Improvement suggestions (green cards)
+
+## 📊 Pages
+
+### Home (`/`)
+- Overview of 3 agents with self-evaluation scores
+- "Why This Wins" feature highlights
+- Links to agent pages
+
+### Strategy Planner (`/strategy`)
+- Student/tutor selection
+- Subject and weeks input
+- Rich text editor for generated strategy
+- Self-evaluation card
+- Version history
+
+### Lesson Creator (`/lesson`)
+- Option: Create from strategy week OR standalone
+- Comprehensive lesson structure display
+- Rich text editor with version history
+- Self-evaluation card
+
+### Activity Creator (`/activity`)
+- Option: Create from lesson phase OR standalone
+- Full-screen Daytona sandbox preview
+- Activity chat for iterations
+- Self-evaluation card
+- Retry deployment button
+
+## 🛠️ Technology Stack
+
+| Component | Technology |
+|-----------|-----------|
+| Framework | Next.js 14 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS |
+| Editor | TipTap |
+| HTTP Client | Axios |
+| State | React Hooks |
+
+## 🎯 User Flow
+
+```
+1. Home → Choose Agent
+2. Strategy: Select student → Generate → Edit/Save
+3. Lesson: Select strategy week → Generate → Edit/Save
+4. Activity: Select lesson phase → Generate → Chat to iterate
+```
+
+## 📝 License
+
+Portfolio project for WaveHacks 2 2025 - Best Self-Improving Agent Track
