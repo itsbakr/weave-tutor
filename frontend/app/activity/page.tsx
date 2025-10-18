@@ -5,6 +5,7 @@ import { activityApi, dataApi } from '@/lib/api';
 import { SelfEvaluationCard } from '@/components/SelfEvaluationCard';
 import { SandboxPreview } from '@/components/SandboxPreview';
 import { ActivityChat } from '@/components/ActivityChat';
+import { ContentGallery } from '@/components/ContentGallery';
 import { Loader2, Activity, ArrowLeft, Sparkles, ChevronDown, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import type { ActivityResponse, SelfEvaluation } from '@/lib/types';
@@ -39,6 +40,9 @@ export default function ActivityPage() {
   const [code, setCode] = useState('');
   const [sandboxUrl, setSandboxUrl] = useState('');
   const [lastRequestData, setLastRequestData] = useState<any>(null); // Store last request for retry
+  const [pastActivities, setPastActivities] = useState<any[]>([]);
+  const [loadingActivities, setLoadingActivities] = useState(false);
+  const [redeployingActivity, setRedeployingActivity] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     student_id: '',
     tutor_id: '',
@@ -87,6 +91,27 @@ export default function ActivityPage() {
     }
   }, [formData.student_id]);
 
+  // Load past activities when student selected
+  useEffect(() => {
+    const loadActivities = async () => {
+      if (!formData.student_id) {
+        setPastActivities([]);
+        return;
+      }
+      
+      setLoadingActivities(true);
+      try {
+        const response = await dataApi.getActivities(formData.student_id);
+        setPastActivities(response.activities || []);
+      } catch (error) {
+        console.error('Failed to load past activities:', error);
+      } finally {
+        setLoadingActivities(false);
+      }
+    };
+    loadActivities();
+  }, [formData.student_id]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -125,6 +150,50 @@ export default function ActivityPage() {
       alert('Failed to create activity. Make sure the backend is running!');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePreviewActivity = async (activityItem: any) => {
+    // Redeploy activity from gallery
+    if (!formData.student_id) {
+      alert('Please select a student first.');
+      return;
+    }
+
+    setRedeployingActivity(activityItem.id);
+
+    try {
+      console.log('🚀 Redeploying activity from gallery:', activityItem.id);
+      const response = await activityApi.redeploy({
+        activity_id: activityItem.id,
+        student_id: formData.student_id,
+      });
+
+      // Update the sandbox URL
+      setSandboxUrl(response.sandbox_url || '');
+      
+      // Optionally load the activity details
+      setActivity({
+        activity_id: activityItem.id,
+        content: activityItem.content || {},
+        evaluation: activityItem.self_evaluation,
+        deployment: response.deployment,
+        sandbox_url: response.sandbox_url,
+        student: { id: formData.student_id },
+        tutor: { id: formData.tutor_id },
+      } as any);
+      
+      setEvaluation(activityItem.self_evaluation || null);
+      
+      // Scroll to preview
+      window.scrollTo({ top: 400, behavior: 'smooth' });
+      
+      alert('✅ Activity redeployed successfully! Sandbox is building...');
+    } catch (error) {
+      console.error('Failed to redeploy activity:', error);
+      alert('❌ Failed to redeploy activity. Please try again.');
+    } finally {
+      setRedeployingActivity(null);
     }
   };
 
@@ -462,6 +531,8 @@ export default function ActivityPage() {
               sandboxUrl={sandboxUrl}
               status={activity.deployment?.status}
               attempts={activity.deployment?.attempts}
+              isRebuilding={!!redeployingActivity}
+              rebuildMessage={redeployingActivity ? 'Redeploying activity from gallery...' : 'Rebuilding sandbox...'}
             />
 
             {/* Retry Button - Show when deployment failed */}
@@ -525,6 +596,33 @@ export default function ActivityPage() {
 
             {evaluation && <SelfEvaluationCard evaluation={evaluation} agentName="Activity Creator" />}
           </>
+        )}
+
+        {/* Past Activities Gallery with Preview/Redeploy */}
+        {formData.student_id && (
+          <ContentGallery
+            title="Past Activities"
+            items={pastActivities}
+            type="activity"
+            loading={loadingActivities}
+            onItemClick={(item) => {
+              // Load activity details without redeploying
+              setActivity({
+                activity_id: item.id,
+                content: item.content || {},
+                evaluation: item.self_evaluation,
+                deployment: { status: item.deployment_status },
+                sandbox_url: item.sandbox_url,
+                student: { id: formData.student_id },
+                tutor: { id: formData.tutor_id },
+              } as any);
+              setEvaluation(item.self_evaluation || null);
+              setSandboxUrl(item.sandbox_url || '');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onPreview={handlePreviewActivity}
+            emptyMessage="No activities yet. Generate your first one above!"
+          />
         )}
       </div>
     </div>

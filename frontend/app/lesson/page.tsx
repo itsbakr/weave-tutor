@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { lessonApi, dataApi } from '@/lib/api';
 import { SelfEvaluationCard } from '@/components/SelfEvaluationCard';
 import { RichTextEditor } from '@/components/RichTextEditor';
+import { ContentGallery } from '@/components/ContentGallery';
 import { Loader2, FileText, ArrowLeft, Sparkles, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { formatLessonToHTML } from '@/lib/lessonFormatter';
@@ -40,6 +41,8 @@ export default function LessonPage() {
   const [lessonId, setLessonId] = useState<string>('');
   const [editNotes, setEditNotes] = useState('');
   const [saving, setSaving] = useState(false);
+  const [pastLessons, setPastLessons] = useState<any[]>([]);
+  const [loadingLessons, setLoadingLessons] = useState(false);
   const [formData, setFormData] = useState({
     student_id: '',
     tutor_id: '',
@@ -84,6 +87,27 @@ export default function LessonPage() {
     } else {
       setStrategies([]);
     }
+  }, [formData.student_id]);
+
+  // Load past lessons when student selected
+  useEffect(() => {
+    const loadLessons = async () => {
+      if (!formData.student_id) {
+        setPastLessons([]);
+        return;
+      }
+      
+      setLoadingLessons(true);
+      try {
+        const response = await dataApi.getLessons(formData.student_id);
+        setPastLessons(response.lessons || []);
+      } catch (error) {
+        console.error('Failed to load past lessons:', error);
+      } finally {
+        setLoadingLessons(false);
+      }
+    };
+    loadLessons();
   }, [formData.student_id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -391,6 +415,23 @@ export default function LessonPage() {
             {/* Self-Evaluation */}
             {evaluation && <SelfEvaluationCard evaluation={evaluation} agentName="Lesson Creator" />}
           </>
+        )}
+
+        {/* Past Lessons Gallery */}
+        {formData.student_id && (
+          <ContentGallery
+            title="Past Lessons"
+            items={pastLessons}
+            type="lesson"
+            loading={loadingLessons}
+            onItemClick={(item) => {
+              setLesson(item.content);
+              setLessonId(item.id);
+              setEvaluation(item.self_evaluation || null);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            emptyMessage="No lessons yet. Generate your first one above!"
+          />
         )}
       </div>
     </div>

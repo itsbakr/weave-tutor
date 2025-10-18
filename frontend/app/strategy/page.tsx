@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { strategyApi, dataApi } from '@/lib/api';
 import { SelfEvaluationCard } from '@/components/SelfEvaluationCard';
 import { RichTextEditor } from '@/components/RichTextEditor';
+import { ContentGallery } from '@/components/ContentGallery';
 import { Loader2, ArrowLeft, Sparkles, ChevronDown, Brain, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { formatStrategyToHTML } from '@/lib/strategyFormatter';
@@ -41,6 +42,8 @@ export default function StrategyPage() {
   const [strategyId, setStrategyId] = useState<string>('');
   const [editNotes, setEditNotes] = useState('');
   const [saving, setSaving] = useState(false);
+  const [pastStrategies, setPastStrategies] = useState<any[]>([]);
+  const [loadingStrategies, setLoadingStrategies] = useState(false);
   const [formData, setFormData] = useState({
     student_id: '',
     tutor_id: '',
@@ -66,6 +69,27 @@ export default function StrategyPage() {
     };
     loadData();
   }, []);
+
+  // Load past strategies when student is selected
+  useEffect(() => {
+    const loadStrategies = async () => {
+      if (!formData.student_id) {
+        setPastStrategies([]);
+        return;
+      }
+      
+      setLoadingStrategies(true);
+      try {
+        const response = await dataApi.getStrategies(formData.student_id);
+        setPastStrategies(response.strategies || []);
+      } catch (error) {
+        console.error('Failed to load past strategies:', error);
+      } finally {
+        setLoadingStrategies(false);
+      }
+    };
+    loadStrategies();
+  }, [formData.student_id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -374,6 +398,23 @@ export default function StrategyPage() {
             {/* Self-Evaluation */}
             {evaluation && <SelfEvaluationCard evaluation={evaluation} agentName="Strategy Planner" />}
           </>
+        )}
+
+        {/* Past Strategies Gallery */}
+        {formData.student_id && (
+          <ContentGallery
+            title="Past Strategies"
+            items={pastStrategies}
+            type="strategy"
+            loading={loadingStrategies}
+            onItemClick={(item) => {
+              setStrategy(item.content);
+              setStrategyId(item.id);
+              setEvaluation(item.self_evaluation || null);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            emptyMessage="No strategies yet. Generate your first one above!"
+          />
         )}
       </div>
     </div>

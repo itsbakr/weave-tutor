@@ -217,6 +217,23 @@ async def get_student_lessons(student_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/api/v1/data/activities/{student_id}")
+async def get_student_activities(student_id: str):
+    """Get all activities for a student (for gallery view)"""
+    try:
+        response = supabase.table('activities')\
+            .select('id, title, type, duration, sandbox_url, sandbox_id, deployment_status, created_at, lesson_id, self_evaluation')\
+            .eq('student_id', student_id)\
+            .order('created_at', desc=True)\
+            .execute()
+        return {
+            "success": True,
+            "activities": response.data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # Import agents
 from agents.strategy_planner import generate_strategy
 from agents.lesson_creator import generate_lesson
@@ -400,6 +417,40 @@ async def redeploy_activity(request: dict):
     except Exception as e:
         print(f"❌ Redeployment error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/v1/agents/activity/cleanup")
+async def cleanup_old_sandbox(request: dict):
+    """
+    Delete old Daytona sandbox to free resources.
+    Called when creating a new sandbox for an activity that already has one.
+    """
+    try:
+        from services.daytona_service import daytona_service
+        
+        old_sandbox_id = request.get('old_sandbox_id')
+        session_id = request.get('session_id')
+        
+        if not old_sandbox_id:
+            return {"success": False, "message": "No old_sandbox_id provided"}
+        
+        print(f"🧹 Cleaning up old sandbox: {old_sandbox_id}")
+        success = await daytona_service.delete_sandbox(old_sandbox_id, session_id)
+        
+        if success:
+            return {
+                "success": True,
+                "message": f"Sandbox {old_sandbox_id} cleaned up successfully"
+            }
+        else:
+            return {
+                "success": False,
+                "message": "Sandbox cleanup failed (may already be deleted)"
+            }
+        
+    except Exception as e:
+        print(f"⚠️ Cleanup error: {str(e)}")
+        return {"success": False, "error": str(e)}
 
 
 # ==========================================

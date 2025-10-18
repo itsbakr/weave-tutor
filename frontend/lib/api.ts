@@ -32,6 +32,11 @@ export const dataApi = {
     const response = await api.get(`/api/v1/data/lessons/${studentId}`);
     return response.data;
   },
+  
+  getActivities: async (studentId: string) => {
+    const response = await api.get(`/api/v1/data/activities/${studentId}`);
+    return response.data;
+  },
 };
 
 // API functions
@@ -141,6 +146,18 @@ export const activityApi = {
   
   getChatHistory: async (activityId: string) => {
     const response = await api.get(`/api/v1/activity/chat/${activityId}`);
+    return response.data;
+  },
+  
+  cleanupSandbox: async (data: {
+    old_sandbox_id: string;
+    session_id?: string;
+  }): Promise<{
+    success: boolean;
+    message?: string;
+    error?: string;
+  }> => {
+    const response = await api.post('/api/v1/agents/activity/cleanup', data);
     return response.data;
   },
 };
